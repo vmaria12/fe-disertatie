@@ -1,4 +1,4 @@
-import { Brain, Shield, Activity, FileCheck, ArrowRight } from 'lucide-react';
+import { Brain, Activity, FileCheck, ArrowRight } from 'lucide-react';
 
 interface HomeProps {
   onNavigate: (page: string) => void;
