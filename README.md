@@ -2,7 +2,7 @@ fe-disertatie
 
 How to run:
 1. npm i
-2. mpm run dev
+2. npm run dev
 3. 🌐  http://localhost:5173/
 ----------------------------
 
