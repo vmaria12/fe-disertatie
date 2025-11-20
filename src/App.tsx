@@ -24,20 +24,7 @@ function App() {
             <Brain className="w-8 h-8 text-blue-600" />
             <span className="text-xl font-semibold text-slate-900">NeuroDetect</span>
           </button>
-          <div className="flex gap-6">
-            <button
-              onClick={() => handleNavigate('home')}
-              className={`transition-colors ${currentPage === 'home' ? 'text-slate-900 font-medium' : 'text-slate-600 hover:text-slate-900'}`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => handleNavigate('diagnose')}
-              className={`transition-colors ${currentPage === 'diagnose' ? 'text-slate-900 font-medium' : 'text-slate-600 hover:text-slate-900'}`}
-            >
-              Diagnosticare
-            </button>
-          </div>
+
         </div>
       </nav>
 
