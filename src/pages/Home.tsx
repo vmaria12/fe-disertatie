@@ -1,4 +1,4 @@
-import { Brain, Activity, FileCheck, ArrowRight, Menu, Stethoscope, Vote } from 'lucide-react';
+import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote } from 'lucide-react';
 import { useState } from 'react';
 
 interface HomeProps {
