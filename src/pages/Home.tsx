@@ -62,6 +62,22 @@ export function Home({ onNavigate }: HomeProps) {
                             </div>
                         )}
                     </button>
+
+                    <button
+                        onClick={() => onNavigate('voting-label')}
+                        className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group
+                        ${!isSidebarOpen ? 'justify-center' : 'hover:bg-purple-50'}`}
+                    >
+                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                            <Vote className="w-6 h-6" />
+                        </div>
+                        {isSidebarOpen && (
+                            <div className="text-left">
+                                <p className="font-semibold text-slate-700 group-hover:text-purple-700">Votare</p>
+                                <p className="text-xs text-slate-500">Suma etichetelor - Yolo</p>
+                            </div>
+                        )}
+                    </button>
                 </nav>
 
 

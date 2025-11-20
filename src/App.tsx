@@ -3,8 +3,9 @@ import { Brain } from 'lucide-react';
 import { Home } from './pages/Home';
 import { Diagnose } from './pages/Diagnose';
 import { AutomatedDiagnose } from './pages/AutomatedDiagnose';
+import { VotingLabel } from './pages/VotingLabel';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose';
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -36,6 +37,7 @@ function App() {
       {currentPage === 'home' && <Home onNavigate={handleNavigate} />}
       {currentPage === 'diagnose' && <Diagnose onNavigate={handleNavigate} />}
       {currentPage === 'automated-diagnose' && <AutomatedDiagnose onNavigate={handleNavigate} />}
+      {currentPage === 'voting-label' && <VotingLabel onNavigate={handleNavigate} />}
 
       {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">
