@@ -16,7 +16,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-100px-6 py-4 flex items-center justify-between">
+        <div className="px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => handleNavigate('home')}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -25,6 +25,11 @@ function App() {
             <span className="text-xl font-semibold text-slate-900">NeuroDetect</span>
           </button>
 
+          <div className="flex items-center">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-md border-2 border-white ring-2 ring-blue-50">
+              MV
+            </div>
+          </div>
         </div>
       </nav>
 
@@ -32,6 +37,7 @@ function App() {
       {currentPage === 'diagnose' && <Diagnose onNavigate={handleNavigate} />}
       {currentPage === 'automated-diagnose' && <AutomatedDiagnose onNavigate={handleNavigate} />}
 
+      {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between">
