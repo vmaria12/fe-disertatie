@@ -1,4 +1,4 @@
-import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote } from 'lucide-react';
+import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface HomeProps {
@@ -7,6 +7,8 @@ interface HomeProps {
 
 export function Home({ onNavigate }: HomeProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isYoloExpanded, setIsYoloExpanded] = useState(false);
+    const [isClassificationExpanded, setIsClassificationExpanded] = useState(false);
 
     return (
         <div className="flex min-h-screen bg-slate-50">
@@ -31,56 +33,147 @@ export function Home({ onNavigate }: HomeProps) {
                 </div>
 
                 <nav className="mt-8 px-4 space-y-3">
-                    <button
-                        onClick={() => onNavigate('diagnose')}
-                        className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group
-                        ${!isSidebarOpen ? 'justify-center' : 'hover:bg-blue-50'}`}
-                    >
-                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <Stethoscope className="w-6 h-6" />
-                        </div>
-                        {isSidebarOpen && (
-                            <div className="text-left">
-                                <p className="font-semibold text-slate-700 group-hover:text-blue-700">Diagnosticare</p>
-                                <p className="text-xs text-slate-500">Selectare Yolo</p>
+                    {/* Detectie Yolo Section */}
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => {
+                                if (!isSidebarOpen) setIsSidebarOpen(true);
+                                setIsYoloExpanded(!isYoloExpanded);
+                            }}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
+                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <Brain className="w-6 h-6" />
                             </div>
-                        )}
-                    </button>
+                            {isSidebarOpen && (
+                                <div className="flex-1 flex items-center justify-between">
+                                    <span className="font-semibold text-slate-700">Detectie Yolo</span>
+                                    {isYoloExpanded ? (
+                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                                    )}
+                                </div>
+                            )}
+                        </button>
 
-                    <button
-                        onClick={() => onNavigate('automated-diagnose')}
-                        className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group
-                        ${!isSidebarOpen ? 'justify-center' : 'hover:bg-green-50'}`}
-                    >
-                        <div className="p-2 bg-green-100 text-green-600 rounded-lg group-hover:bg-green-600 group-hover:text-white transition-colors">
-                            <Vote className="w-6 h-6" />
-                        </div>
-                        {isSidebarOpen && (
-                            <div className="text-left">
-                                <p className="font-semibold text-slate-700 group-hover:text-green-700">Votare</p>
-                                <p className="text-xs text-slate-500">Suma probabilităților - Yolo</p>
-                            </div>
-                        )}
-                    </button>
+                        {/* Expandable Content Yolo */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out
+                            ${isYoloExpanded && isSidebarOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                        >
+                            <div className="pl-4 space-y-2 mt-2">
+                                <button
+                                    onClick={() => onNavigate('diagnose')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-blue-50 text-blue-500 rounded-md group-hover:bg-blue-500 group-hover:text-white">
+                                        <Stethoscope className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-blue-700 text-left">
+                                        Selectare Yolo
+                                    </span>
+                                </button>
 
-                    <button
-                        onClick={() => onNavigate('voting-label')}
-                        className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group
-                        ${!isSidebarOpen ? 'justify-center' : 'hover:bg-purple-50'}`}
-                    >
-                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                            <Vote className="w-6 h-6" />
-                        </div>
-                        {isSidebarOpen && (
-                            <div className="text-left">
-                                <p className="font-semibold text-slate-700 group-hover:text-purple-700">Votare</p>
-                                <p className="text-xs text-slate-500">Suma etichetelor - Yolo</p>
+                                <button
+                                    onClick={() => onNavigate('automated-diagnose')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-green-50 text-green-500 rounded-md group-hover:bg-green-500 group-hover:text-white">
+                                        <Vote className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-green-700 text-left">
+                                        Votare-Suma probabilităților
+                                    </span>
+                                </button>
+
+                                <button
+                                    onClick={() => onNavigate('voting-label')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                        <Vote className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
+                                        Votare-Suma etichetelor
+                                    </span>
+                                </button>
                             </div>
-                        )}
-                    </button>
+                        </div>
+                    </div>
+
+                    {/* Clasificare Section */}
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => {
+                                if (!isSidebarOpen) setIsSidebarOpen(true);
+                                setIsClassificationExpanded(!isClassificationExpanded);
+                            }}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
+                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                <Activity className="w-6 h-6" />
+                            </div>
+                            {isSidebarOpen && (
+                                <div className="flex-1 flex items-center justify-between">
+                                    <span className="font-semibold text-slate-700">Clasificare</span>
+                                    {isClassificationExpanded ? (
+                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                                    )}
+                                </div>
+                            )}
+                        </button>
+
+                        {/* Expandable Content Clasificare */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out
+                            ${isClassificationExpanded && isSidebarOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+                        >
+                            <div className="pl-4 space-y-2 mt-2">
+                                <button
+                                    onClick={() => onNavigate('classify-efficientnet')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-indigo-50 text-indigo-500 rounded-md group-hover:bg-indigo-500 group-hover:text-white">
+                                        <Brain className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-indigo-700 text-left">
+                                        efficientnet_b7/ resnet101/ vit_b16
+                                    </span>
+                                </button>
+
+                                <button
+                                    onClick={() => onNavigate('classify-voting-prob')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-teal-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-teal-50 text-teal-500 rounded-md group-hover:bg-teal-500 group-hover:text-white">
+                                        <Vote className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-teal-700 text-left">
+                                        Votare Suma probabilitatilor
+                                    </span>
+                                </button>
+
+
+                                <button
+                                    onClick={() => onNavigate('classify-voting-label')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                        <Vote className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
+                                        Votare suma etichetelor
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
-
-
             </aside>
 
             {/* Main Content */}
@@ -95,7 +188,7 @@ export function Home({ onNavigate }: HomeProps) {
                                 Clasificarea tumorilor cerebrale folosind YOLO, rețele neuronale și Transformer vizual
                             </div>
                             <p className="text-l text-slate-600 mb-8 leading-relaxed">
-                                Platforma noastră de ultimă oră combină imagistica medicală cu rețele neuronale și Transformer vizual pentru a asista profesioniștii din sănătate în identificarea tumorilor cerebrale cu precizie.
+                                Platforma combină imagistica medicală cu rețele neuronale și Transformer vizual pentru a ajuta la identificarea tumorilor cerebrale.
                             </p>
 
                         </div>
@@ -115,10 +208,8 @@ export function Home({ onNavigate }: HomeProps) {
                 <section id="features" className="bg-white py-20">
                     <div className="max-w-7xl mx-auto px-8">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold text-slate-900 mb-4">Funcționalități Cheie</h2>
-                            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                                Platforma noastră oferă instrumente complete pentru profesioniștii medicali pentru a îmbunătăți capacitățile de diagnostic
-                            </p>
+                            <h2 className="text-4xl font-bold text-slate-900 mb-4">Funcționalități</h2>
+
                         </div>
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="bg-slate-50 rounded-xl p-8 hover:shadow-lg transition-all hover:-translate-y-1 duration-300 border border-slate-100">
@@ -127,7 +218,7 @@ export function Home({ onNavigate }: HomeProps) {
                                 </div>
                                 <h3 className="text-xl font-semibold text-slate-900 mb-3">Analiză în Timp Real</h3>
                                 <p className="text-slate-600 leading-relaxed">
-                                    Procesează imagini medicale cu rețele neuronale și Transformer vizual, oferind rezultate preliminare instantanee.
+                                    Procesează imagini medicale cu rețele neuronale și Transformer vizual
                                 </p>
                             </div>
 
@@ -137,7 +228,7 @@ export function Home({ onNavigate }: HomeProps) {
                                 </div>
                                 <h3 className="text-xl font-semibold text-slate-900 mb-3">Detalii despre tumoră</h3>
                                 <p className="text-slate-600 leading-relaxed">
-                                    Afișează tipul tumorii, scorurile de încredere a tumorii și hărți de activare pentru interpretare.
+                                    Afișează tipul tumorii, acuratețea acesteia.
                                 </p>
                             </div>
                         </div>
@@ -149,7 +240,7 @@ export function Home({ onNavigate }: HomeProps) {
                         <div className="text-center mb-12">
                             <h2 className="text-4xl font-bold text-slate-900 mb-4">Arhitectura Sistemului</h2>
                             <p className="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">
-                                Utilizăm o abordare hibridă care combină viteza rețelelor convoluționale cu capacitatea de înțelegere globală a Transformerelor vizuale.
+                                Se utilizează Transfered Learning, care combină rețele convoluționale/Transfore vizuale și Yolo.
                             </p>
                         </div>
                         <div className="grid md:grid-cols-2 gap-8 mt-12">
@@ -185,14 +276,14 @@ export function Home({ onNavigate }: HomeProps) {
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-bold text-slate-900 mb-4">Modele YOLO Integrate</h2>
                             <p className="text-xl text-slate-600 leading-relaxed">
-                                Detectare rapidă și precisă a obiectelor pentru localizarea tumorilor.
+                                Detectare și localizarea tumorilor.
                             </p>
                         </div>
                         <div className="grid md:grid-cols-3 gap-8">
                             {[
-                                { ver: 'v8', color: 'text-blue-600', desc: 'Echilibru optim între viteză și precizie' },
-                                { ver: 'v9', color: 'text-indigo-600', desc: 'Arhitectură îmbunătățită pentru cazuri complexe' },
-                                { ver: 'v12', color: 'text-violet-600', desc: 'Ultima generație cu performanțe de top' }
+                                { ver: 'v8', color: 'text-blue-600', desc: '' },
+                                { ver: 'v9', color: 'text-indigo-600', desc: '' },
+                                { ver: 'v12', color: 'text-violet-600', desc: '' }
                             ].map((model) => (
                                 <div key={model.ver} className="bg-slate-50 rounded-xl p-8 hover:shadow-lg transition-all hover:-translate-y-1 duration-300 border border-slate-100">
                                     <div className={`text-3xl font-bold ${model.color} mb-4`}>YOLO{model.ver}</div>
@@ -207,9 +298,6 @@ export function Home({ onNavigate }: HomeProps) {
                     <div className="max-w-7xl mx-auto px-8">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-bold text-slate-900 mb-4">Tehnici de Votare</h2>
-                            <p className="text-xl text-slate-600 leading-relaxed">
-                                Agregarea rezultatelor multiplelor modele pentru o decizie finală robustă.
-                            </p>
                         </div>
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow">
