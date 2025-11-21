@@ -135,7 +135,7 @@ export function Home({ onNavigate }: HomeProps) {
                         >
                             <div className="pl-4 space-y-2 mt-2">
                                 <button
-                                    onClick={() => onNavigate('classify-efficientnet')}
+                                    onClick={() => onNavigate('classify-cnn-vit')}
                                     className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors group"
                                 >
                                     <div className="p-1.5 bg-indigo-50 text-indigo-500 rounded-md group-hover:bg-indigo-500 group-hover:text-white">

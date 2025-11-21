@@ -4,8 +4,9 @@ import { Home } from './pages/Home';
 import { Diagnose } from './pages/Diagnose';
 import { AutomatedDiagnose } from './pages/AutomatedDiagnose';
 import { VotingLabel } from './pages/VotingLabel';
+import { ClassifyCnnVit } from './pages/ClassifyCnnVit';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label';
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -38,6 +39,7 @@ function App() {
       {currentPage === 'diagnose' && <Diagnose onNavigate={handleNavigate} />}
       {currentPage === 'automated-diagnose' && <AutomatedDiagnose onNavigate={handleNavigate} />}
       {currentPage === 'voting-label' && <VotingLabel onNavigate={handleNavigate} />}
+      {currentPage === 'classify-cnn-vit' && <ClassifyCnnVit onNavigate={handleNavigate} />}
 
       {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">
