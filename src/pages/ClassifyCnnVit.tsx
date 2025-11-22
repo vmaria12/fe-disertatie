@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Upload, Loader, ArrowLeft, BarChart3, Image as ImageIcon, Activity } from 'lucide-react';
+import { Upload, Loader, ArrowLeft, BarChart3, Activity } from 'lucide-react';
 
 interface ClassifyCnnVitProps {
     onNavigate: (page: string) => void;
 }
 
 interface ClassificationResponse {
-    tumor_type: string;
-    accuracy: string;
+    predicted_class: string;
+    confidence: string;
+    all_probabilities: {
+        [key: string]: string;
+    };
     model: string;
 }
 
@@ -183,22 +186,22 @@ export function ClassifyCnnVit({ onNavigate }: ClassifyCnnVitProps) {
 
                             {classificationResult && (
                                 <div className="space-y-6">
-                                    <div className={`rounded-xl border-l-4 p-6 mt-12 shadow-sm ${classificationResult.tumor_type !== 'notumor'
+                                    <div className={`rounded-xl border-l-4 p-6 mt-12 shadow-sm ${classificationResult.predicted_class !== 'notumor'
                                         ? 'bg-red-50 border-red-500'
                                         : 'bg-green-50 border-green-500'
                                         }`}>
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h3 className={`text-2xl font-bold mb-2 ${classificationResult.tumor_type !== 'notumor' ? 'text-red-800' : 'text-green-800'
+                                                <h3 className={`text-2xl font-bold mb-2 ${classificationResult.predicted_class !== 'notumor' ? 'text-red-800' : 'text-green-800'
                                                     }`}>
-                                                    {classificationResult.tumor_type !== 'notumor'
-                                                        ? `⚠️ Tumoare Detectată: ${classificationResult.tumor_type}`
+                                                    {classificationResult.predicted_class !== 'notumor'
+                                                        ? `⚠️ Tumoare Detectată: ${classificationResult.predicted_class}`
                                                         : '✅ Nu s-a detectat tumoare'}
                                                 </h3>
                                                 <div className="flex items-center gap-2 mt-2">
                                                     <span className="font-medium text-slate-700">Acuratețe:</span>
                                                     <span className="text-xl font-bold font-mono text-slate-900">
-                                                        {classificationResult.accuracy}
+                                                        {classificationResult.confidence}
                                                     </span>
                                                 </div>
                                                 <div className="text-sm text-slate-500 mt-1">
@@ -208,7 +211,21 @@ export function ClassifyCnnVit({ onNavigate }: ClassifyCnnVitProps) {
                                         </div>
                                     </div>
 
-
+                                    {/* Probabilities Card */}
+                                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                                        <h4 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                                            <Activity className="w-5 h-5 text-indigo-600" />
+                                            Probabilități Detaliate
+                                        </h4>
+                                        <div className="space-y-3">
+                                            {Object.entries(classificationResult.all_probabilities).map(([className, probability]) => (
+                                                <div key={className} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                                                    <span className="font-medium text-slate-700 capitalize">{className}</span>
+                                                    <span className="font-mono font-bold text-indigo-600">{probability}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
