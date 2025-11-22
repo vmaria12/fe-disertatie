@@ -6,8 +6,9 @@ import { AutomatedDiagnose } from './pages/AutomatedDiagnose';
 import { VotingLabel } from './pages/VotingLabel';
 import { ClassifyCnnVit } from './pages/ClassifyCnnVit';
 import { ClassifyCnnVitVotingLikelyhood } from './pages/ClassifyCnnVitVotingLikelyhood';
+import { ClassifyCnnVitVotingLabel } from './pages/ClassifyCnnVitVotingLabel';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob';
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -42,6 +43,7 @@ function App() {
       {currentPage === 'voting-label' && <VotingLabel onNavigate={handleNavigate} />}
       {currentPage === 'classify-cnn-vit' && <ClassifyCnnVit onNavigate={handleNavigate} />}
       {currentPage === 'classify-voting-prob' && <ClassifyCnnVitVotingLikelyhood onNavigate={handleNavigate} />}
+      {currentPage === 'classify-voting-label' && <ClassifyCnnVitVotingLabel onNavigate={handleNavigate} />}
 
       {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">
