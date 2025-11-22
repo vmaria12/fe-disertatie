@@ -69,7 +69,7 @@ export function Home({ onNavigate }: HomeProps) {
                                     className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group"
                                 >
                                     <div className="p-1.5 bg-blue-50 text-blue-500 rounded-md group-hover:bg-blue-500 group-hover:text-white">
-                                        <Stethoscope className="w-4 h-4" />
+                                        <Brain className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-blue-700 text-left">
                                         Selectare Yolo
@@ -113,7 +113,7 @@ export function Home({ onNavigate }: HomeProps) {
                             className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
                             ${!isSidebarOpen ? 'justify-center' : ''}`}
                         >
-                            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            <div className="p-1.5 bg-teal-50 text-teal-500 rounded-md group-hover:bg-teal-500 group-hover:text-white">
                                 <Activity className="w-6 h-6" />
                             </div>
                             {isSidebarOpen && (
@@ -172,6 +172,24 @@ export function Home({ onNavigate }: HomeProps) {
                                 </button>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Detectie & Clasificare Section */}
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => onNavigate('detect-classify')}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
+                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                <Stethoscope className="w-6 h-6" />
+                            </div>
+                            {isSidebarOpen && (
+                                <div className="flex-1 flex items-center justify-between">
+                                    <span className="font-semibold text-slate-700">Detectie & Clasificare</span>
+                                </div>
+                            )}
+                        </button>
                     </div>
                 </nav>
             </aside>
