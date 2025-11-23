@@ -420,19 +420,26 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold text-slate-900">Pasul 3: Clasificare CNN & ViT</h2>
-                            {/* Final step, maybe a button to restart? */}
-                            <button
-                                onClick={() => {
-                                    setStep(1);
-                                    setUploadedImage(null);
-                                    setUploadedFile(null);
-                                    setYoloResult(null);
-                                    setCnnResult(null);
-                                }}
-                                className="px-6 py-3 rounded-xl font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 transition-all flex items-center gap-2"
-                            >
-                                <RotateCcw className="w-5 h-5" /> Start Nou
-                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setStep(2)}
+                                    className="px-6 py-3 rounded-xl font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 transition-all flex items-center gap-2"
+                                >
+                                    <ArrowLeft className="w-5 h-5" /> Înapoi
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setStep(1);
+                                        setUploadedImage(null);
+                                        setUploadedFile(null);
+                                        setYoloResult(null);
+                                        setCnnResult(null);
+                                    }}
+                                    className="px-6 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-2 shadow-lg"
+                                >
+                                    <RotateCcw className="w-5 h-5" /> Start Nou
+                                </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
