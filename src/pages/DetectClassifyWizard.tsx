@@ -292,14 +292,28 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold text-slate-900">Pasul 2: Detecție Yolo</h2>
-                            <button
-                                onClick={() => setStep(3)}
-                                disabled={!yoloResult || yoloResult.voting_result.vote_count === 3}
-                                title={yoloResult?.voting_result.vote_count === 3 ? "Rezultat unanim - Pasul 3 nu este necesar" : ""}
-                                className="px-8 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Next <ChevronRight className="w-5 h-5" />
-                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => {
+                                        setStep(1);
+                                        setUploadedImage(null);
+                                        setUploadedFile(null);
+                                        setYoloResult(null);
+                                        setCnnResult(null);
+                                    }}
+                                    className="px-6 py-3 rounded-xl font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 transition-all flex items-center gap-2"
+                                >
+                                    <RotateCcw className="w-5 h-5" /> Incarca alta Imagine
+                                </button>
+                                <button
+                                    onClick={() => setStep(3)}
+                                    disabled={!yoloResult || (yoloResult.voting_result.vote_count === 3 && yoloResult.voting_result.winning_class === 'Nu s-a detectat tumoare')}
+                                    title={yoloResult?.voting_result.vote_count === 3 && yoloResult.voting_result.winning_class === 'Nu s-a detectat tumoare' ? "Rezultat unanim - Pasul 3 nu este necesar" : ""}
+                                    className="px-8 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Next <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -438,7 +452,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                                     }}
                                     className="px-6 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-2 shadow-lg"
                                 >
-                                    <RotateCcw className="w-5 h-5" /> Start Nou
+                                    <RotateCcw className="w-5 h-5" /> Incarca alta Imagine
                                 </button>
                             </div>
                         </div>
