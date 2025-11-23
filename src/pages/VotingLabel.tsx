@@ -251,7 +251,7 @@ export function VotingLabel({ onNavigate }: VotingLabelProps) {
                                         <div className="text-right">
                                             <div className="text-sm text-gray-600 mb-1">Suma Voturilor</div>
                                             <div className="text-2xl font-mono font-bold text-gray-900">
-                                                {votingResult.voting_result.vote_count} / 3
+                                                {votingResult.voting_result.vote_count}
                                             </div>
                                         </div>
                                     </div>
