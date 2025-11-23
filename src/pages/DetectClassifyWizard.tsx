@@ -294,7 +294,8 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                             <h2 className="text-2xl font-bold text-slate-900">Pasul 2: Detecție Yolo</h2>
                             <button
                                 onClick={() => setStep(3)}
-                                disabled={!yoloResult}
+                                disabled={!yoloResult || yoloResult.voting_result.vote_count === 3}
+                                title={yoloResult?.voting_result.vote_count === 3 ? "Rezultat unanim - Pasul 3 nu este necesar" : ""}
                                 className="px-8 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Next <ChevronRight className="w-5 h-5" />
