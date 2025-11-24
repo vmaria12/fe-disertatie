@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
     Brain, Upload, ArrowLeft, AlertTriangle, Loader2,
-    RotateCcw, Target, FileText,
-    CheckCircle2, Vote, Scale, ChevronRight, Check
+    RotateCcw, CheckCircle2, Vote, Scale, Check, ChevronRight
 } from 'lucide-react';
 
 // --- Interfaces for Step 2 (Yolo) ---
@@ -71,12 +70,12 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState('');
+    const [executionTime, setExecutionTime] = useState<number | null>(null);
 
     // Step 2 State (Yolo)
     const [isAnalyzingYolo, setIsAnalyzingYolo] = useState(false);
     const [yoloResult, setYoloResult] = useState<VotingResponseYolo | null>(null);
     const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
-    const [jsonYoloResult, setJsonYoloResult] = useState<any | null>(null);
 
     // Step 3 State (CNN/ViT)
     const [isAnalyzingCnn, setIsAnalyzingCnn] = useState(false);
@@ -93,8 +92,8 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                 // Reset subsequent steps
                 setYoloResult(null);
                 setProcessedImageUrl(null);
-                setJsonYoloResult(null);
                 setCnnResult(null);
+                setExecutionTime(null);
                 setStep(1);
             };
             reader.readAsDataURL(file);
@@ -102,7 +101,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
     };
 
     const runYoloAnalysis = async () => {
-        if (!uploadedFile || yoloResult) return; // Don't re-run if already have result
+        if (!uploadedFile) return;
 
         setIsAnalyzingYolo(true);
         try {
@@ -128,17 +127,6 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                 setYoloResult(data);
             }
 
-            // 2. Call Label Endpoint (JSON) - Auto fetch for JSON view
-            const responseJson = await fetch('http://localhost:8000/api/detect-tumor/yolo/voting-label', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (responseJson.ok) {
-                const jsonData = await responseJson.json();
-                setJsonYoloResult(jsonData);
-            }
-
         } catch (error) {
             console.error('Error analyzing image (Yolo):', error);
             alert('A apărut o eroare la analiza Yolo.');
@@ -148,7 +136,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
     };
 
     const runCnnAnalysis = async () => {
-        if (!uploadedFile || cnnResult) return;
+        if (!uploadedFile) return;
 
         setIsAnalyzingCnn(true);
         try {
@@ -175,15 +163,26 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
         }
     };
 
-    // Auto-run analysis when entering steps
+    // Auto-run analysis pipeline
     useEffect(() => {
-        if (step === 2 && !yoloResult && !isAnalyzingYolo) {
-            runYoloAnalysis();
-        }
-        if (step === 3 && !cnnResult && !isAnalyzingCnn) {
-            runCnnAnalysis();
-        }
-    }, [step]);
+        const runPipeline = async () => {
+            if (uploadedFile && !yoloResult && !cnnResult && !isAnalyzingYolo && !isAnalyzingCnn) {
+                const startTime = performance.now();
+
+                setStep(2);
+                await runYoloAnalysis();
+
+                setStep(3);
+                await runCnnAnalysis();
+
+                const endTime = performance.now();
+                setExecutionTime(endTime - startTime);
+            }
+        };
+
+        runPipeline();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [uploadedFile]);
 
     const renderStepIndicator = () => (
         <div className="flex items-center justify-center mb-12">
@@ -231,6 +230,14 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                     </button>
                 </div>
 
+                {executionTime !== null && (
+                    <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center animate-in fade-in slide-in-from-top-4">
+                        <p className="text-lg font-semibold text-blue-900">
+                            Timp total de execuție: <span className="font-mono text-2xl">{executionTime.toFixed(2)} ms</span>
+                        </p>
+                    </div>
+                )}
+
                 {renderStepIndicator()}
 
                 {/* Step 1: Upload */}
@@ -274,12 +281,14 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                                         >
                                             Schimbă Imaginea
                                         </button>
-                                        <button
-                                            onClick={() => setStep(2)}
-                                            className="px-8 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg flex items-center gap-2"
-                                        >
-                                            Next <ChevronRight className="w-5 h-5" />
-                                        </button>
+                                        {yoloResult && (
+                                            <button
+                                                onClick={() => setStep(2)}
+                                                className="px-8 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg flex items-center gap-2"
+                                            >
+                                                Next <ChevronRight className="w-5 h-5" />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -287,32 +296,26 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                     </div>
                 )}
 
-                {/* Step 2: Yolo Results */}
+                {/* Step 2: Yolo Results (Shown briefly or if stuck) */}
                 {step === 2 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold text-slate-900">Pasul 2: Detecție Yolo</h2>
                             <div className="flex gap-3">
                                 <button
-                                    onClick={() => {
-                                        setStep(1);
-                                        setUploadedImage(null);
-                                        setUploadedFile(null);
-                                        setYoloResult(null);
-                                        setCnnResult(null);
-                                    }}
+                                    onClick={() => setStep(1)}
                                     className="px-6 py-3 rounded-xl font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 transition-all flex items-center gap-2"
                                 >
-                                    <RotateCcw className="w-5 h-5" /> Incarca alta Imagine
+                                    <ArrowLeft className="w-5 h-5" /> Înapoi
                                 </button>
-                                <button
-                                    onClick={() => setStep(3)}
-                                    disabled={!yoloResult || (yoloResult.voting_result.vote_count === 3 && yoloResult.voting_result.winning_class === 'Nu s-a detectat tumoare')}
-                                    title={yoloResult?.voting_result.vote_count === 3 && yoloResult.voting_result.winning_class === 'Nu s-a detectat tumoare' ? "Rezultat unanim - Pasul 3 nu este necesar" : ""}
-                                    className="px-8 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Next <ChevronRight className="w-5 h-5" />
-                                </button>
+                                {cnnResult && (
+                                    <button
+                                        onClick={() => setStep(3)}
+                                        className="px-6 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-2 shadow-lg"
+                                    >
+                                        Next <ChevronRight className="w-5 h-5" />
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -337,95 +340,6 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                                     <p className="text-sm text-slate-600 font-medium mt-2">{fileName}</p>
                                 </div>
                             </div>
-
-                            {/* Right: Results */}
-                            <div className="space-y-6">
-                                {yoloResult && (
-                                    <div className="space-y-6">
-                                        {/* Main Result Block */}
-                                        <div className={`p-6 rounded-2xl border backdrop-blur-sm shadow-xl ${yoloResult.voting_result.winning_class === 'Nu s-a detectat tumoare'
-                                            ? 'bg-emerald-100/80 border-emerald-300'
-                                            : 'bg-red-100/80 border-red-300'
-                                            }`}>
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div>
-                                                    <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wider mb-1">
-                                                        Rezultat Final Yolo
-                                                    </h2>
-                                                    <div className="flex items-center gap-3">
-                                                        <span className={`text-3xl font-bold ${yoloResult.voting_result.winning_class === 'Nu s-a detectat tumoare'
-                                                            ? 'text-emerald-600'
-                                                            : 'text-red-600'
-                                                            }`}>
-                                                            {yoloResult.voting_result.winning_class}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="text-sm text-gray-600 mb-1">Suma Voturilor</div>
-                                                    <div className="text-2xl font-mono font-bold text-gray-900">
-                                                        {yoloResult.voting_result.vote_count}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Best Detection Info */}
-                                            {yoloResult.best_detection && (
-                                                <div className="mt-4 pt-4 border-t border-gray-300">
-                                                    <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                                                        <Target className="w-4 h-4 text-blue-400" />
-                                                        Cel mai bun bounding box
-                                                    </h3>
-                                                    <div className="grid grid-cols-2 gap-4 text-sm">
-                                                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                                                            <span className="text-gray-600 block text-xs">Model</span>
-                                                            <span className="text-blue-600 font-mono font-bold">YOLO {yoloResult.best_detection.model}</span>
-                                                        </div>
-                                                        <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                                                            <span className="text-gray-600 block text-xs">Probabilitate</span>
-                                                            <span className="text-green-600 font-mono font-bold">{yoloResult.best_detection.confidence_procent}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Individual Results */}
-                                        <div className="bg-white/80 rounded-2xl p-6 border border-gray-300/50">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                                <FileText className="w-5 h-5 text-blue-400" />
-                                                Rezultate Individuale
-                                            </h3>
-                                            <div className="grid grid-cols-1 gap-4">
-                                                {Object.entries(yoloResult.individual_results).map(([version, results]) => (
-                                                    <div key={version} className="p-4 bg-gray-50 rounded-xl border border-gray-300">
-                                                        <div className="flex items-center justify-between mb-3">
-                                                            <span className="text-sm font-bold text-blue-600 uppercase tracking-wider">
-                                                                YOLO {version}
-                                                            </span>
-                                                            <span className="text-xs text-gray-600">
-                                                                {Array.isArray(results) ? `${results.length} detecții` : 'Eroare'}
-                                                            </span>
-                                                        </div>
-                                                        {Array.isArray(results) && results.length > 0 ? (
-                                                            <div className="space-y-2">
-                                                                {results.map((det, idx) => (
-                                                                    <div key={idx} className="flex justify-between text-sm p-2 bg-white rounded border border-gray-200">
-                                                                        <span className="text-gray-700">{det.clasa}</span>
-                                                                        <span className="font-mono text-green-600">{det.confidence_procent}</span>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-sm text-gray-500 italic">Nicio tumoare detectată</div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
                 )}
@@ -449,6 +363,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                                         setUploadedFile(null);
                                         setYoloResult(null);
                                         setCnnResult(null);
+                                        setExecutionTime(null);
                                     }}
                                     className="px-6 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-2 shadow-lg"
                                 >
