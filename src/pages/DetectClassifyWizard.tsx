@@ -71,6 +71,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState('');
+    const [executionTime, setExecutionTime] = useState<number | null>(null);
 
     // Step 2 State (Yolo)
     const [isAnalyzingYolo, setIsAnalyzingYolo] = useState(false);
@@ -98,14 +99,15 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                 setJsonYoloResult(null);
                 setCnnResult(null);
                 setCroppedImageUrl(null);
+                setExecutionTime(null);
                 setStep(1);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const runYoloAnalysis = async () => {
-        if (!uploadedFile || yoloResult) return; // Don't re-run if already have result
+    const runYoloAnalysis = async (): Promise<VotingResponseYolo | null> => {
+        if (!uploadedFile || yoloResult) return null; // Don't re-run if already have result
 
         setIsAnalyzingYolo(true);
         try {
@@ -129,6 +131,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                 const jsonStr = atob(headerData);
                 const data: VotingResponseYolo = JSON.parse(jsonStr);
                 setYoloResult(data);
+                return data;
             }
 
             // 2. Call Label Endpoint (JSON) - Auto fetch for JSON view
@@ -145,9 +148,11 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
         } catch (error) {
             console.error('Error analyzing image (Yolo):', error);
             alert('A apărut o eroare la analiza Yolo.');
+            return null;
         } finally {
             setIsAnalyzingYolo(false);
         }
+        return null;
     };
 
     const cropImage = (imageFile: File, bbox: { x1: number; y1: number; x2: number; y2: number }): Promise<Blob> => {
@@ -179,17 +184,19 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
         });
     };
 
-    const runCnnAnalysis = async () => {
+    const runCnnAnalysis = async (yoloData?: VotingResponseYolo | null) => {
         if (!uploadedFile || cnnResult) return;
 
         setIsAnalyzingCnn(true);
         try {
             const formData = new FormData();
 
+            const sourceYoloResult = yoloData || yoloResult;
+
             // Check if we have a bounding box from YOLO to crop
-            if (yoloResult?.best_detection?.bounding_box) {
+            if (sourceYoloResult?.best_detection?.bounding_box) {
                 try {
-                    const croppedBlob = await cropImage(uploadedFile, yoloResult.best_detection.bounding_box);
+                    const croppedBlob = await cropImage(uploadedFile, sourceYoloResult.best_detection.bounding_box);
 
                     // Create URL for display
                     const croppedUrl = URL.createObjectURL(croppedBlob);
@@ -225,15 +232,26 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
         }
     };
 
-    // Auto-run analysis when entering steps
+    // Auto-run analysis pipeline
     useEffect(() => {
-        if (step === 2 && !yoloResult && !isAnalyzingYolo) {
-            runYoloAnalysis();
-        }
-        if (step === 3 && !cnnResult && !isAnalyzingCnn) {
-            runCnnAnalysis();
-        }
-    }, [step]);
+        const runPipeline = async () => {
+            if (uploadedFile && !yoloResult && !cnnResult && !isAnalyzingYolo && !isAnalyzingCnn) {
+                const startTime = performance.now();
+
+                setStep(2);
+                const yoloData = await runYoloAnalysis();
+
+                setStep(3);
+                await runCnnAnalysis(yoloData);
+
+                const endTime = performance.now();
+                setExecutionTime(endTime - startTime);
+            }
+        };
+
+        runPipeline();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [uploadedFile]);
 
     const renderStepIndicator = () => (
         <div className="flex items-center justify-center mb-12">
@@ -267,7 +285,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                                Detecție & Clasificare Completă
+                                Detecție & Clasificare Completă - Decupare
                             </h1>
 
                         </div>
@@ -280,6 +298,14 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                         Înapoi la meniu
                     </button>
                 </div>
+
+                {executionTime !== null && (
+                    <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center animate-in fade-in slide-in-from-top-4">
+                        <p className="text-lg font-semibold text-blue-900">
+                            Timp total de execuție: <span className="font-mono text-2xl">{executionTime.toFixed(2)} ms</span>
+                        </p>
+                    </div>
+                )}
 
                 {renderStepIndicator()}
 

@@ -216,7 +216,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                                Detecție & Clasificare Completă
+                                Detecție & Clasificare Completă - imagine originală
                             </h1>
 
                         </div>
