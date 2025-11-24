@@ -1,4 +1,4 @@
-import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight } from 'lucide-react';
+import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight, Crop, Image } from 'lucide-react';
 import { useState } from 'react';
 
 interface HomeProps {
@@ -9,6 +9,7 @@ export function Home({ onNavigate }: HomeProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isYoloExpanded, setIsYoloExpanded] = useState(false);
     const [isClassificationExpanded, setIsClassificationExpanded] = useState(false);
+    const [isDetectClassifyExpanded, setIsDetectClassifyExpanded] = useState(false);
 
     return (
         <div className="flex min-h-screen bg-slate-50">
@@ -177,7 +178,10 @@ export function Home({ onNavigate }: HomeProps) {
                     {/* Detectie & Clasificare Section */}
                     <div className="space-y-1">
                         <button
-                            onClick={() => onNavigate('detect-classify')}
+                            onClick={() => {
+                                if (!isSidebarOpen) setIsSidebarOpen(true);
+                                setIsDetectClassifyExpanded(!isDetectClassifyExpanded);
+                            }}
                             className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
                             ${!isSidebarOpen ? 'justify-center' : ''}`}
                         >
@@ -186,27 +190,47 @@ export function Home({ onNavigate }: HomeProps) {
                             </div>
                             {isSidebarOpen && (
                                 <div className="flex-1 flex items-center justify-between">
-                                    <span className="font-semibold text-slate-700">Detectie & Clasificare: Decupare</span>
+                                    <span className="font-semibold text-slate-700">Detectie & Clasificare</span>
+                                    {isDetectClassifyExpanded ? (
+                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                                    )}
                                 </div>
                             )}
                         </button>
-                    </div>
 
-                    <div className="space-y-1">
-                        <button
-                            onClick={() => onNavigate('detect-classify-basic')}
-                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
-                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        {/* Expandable Content Detectie & Clasificare */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out
+                            ${isDetectClassifyExpanded && isSidebarOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
                         >
-                            <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
-                                <Stethoscope className="w-6 h-6" />
+                            <div className="pl-4 space-y-2 mt-2">
+                                <button
+                                    onClick={() => onNavigate('detect-classify')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                        <Crop className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
+                                        Decupare
+                                    </span>
+                                </button>
+
+                                <button
+                                    onClick={() => onNavigate('detect-classify-basic')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                        <Image className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
+                                        Basic
+                                    </span>
+                                </button>
                             </div>
-                            {isSidebarOpen && (
-                                <div className="flex-1 flex items-center justify-between">
-                                    <span className="font-semibold text-slate-700">Detectie & Clasificare: Basic</span>
-                                </div>
-                            )}
-                        </button>
+                        </div>
                     </div>
                 </nav>
             </aside>
