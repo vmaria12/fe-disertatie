@@ -65,7 +65,7 @@ interface DetectClassifyWizardProps {
     onNavigate: (page: string) => void;
 }
 
-export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) {
+export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
     // Global State
     const [step, setStep] = useState(1);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -77,7 +77,6 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
     const [yoloResult, setYoloResult] = useState<VotingResponseYolo | null>(null);
     const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
     const [jsonYoloResult, setJsonYoloResult] = useState<any | null>(null);
-    const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null);
 
     // Step 3 State (CNN/ViT)
     const [isAnalyzingCnn, setIsAnalyzingCnn] = useState(false);
@@ -95,9 +94,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                 setYoloResult(null);
                 setProcessedImageUrl(null);
                 setJsonYoloResult(null);
-                setJsonYoloResult(null);
                 setCnnResult(null);
-                setCroppedImageUrl(null);
                 setStep(1);
             };
             reader.readAsDataURL(file);
@@ -150,60 +147,13 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
         }
     };
 
-    const cropImage = (imageFile: File, bbox: { x1: number; y1: number; x2: number; y2: number }): Promise<Blob> => {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const width = bbox.x2 - bbox.x1;
-                const height = bbox.y2 - bbox.y1;
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) {
-                    reject(new Error('Could not get canvas context'));
-                    return;
-                }
-                ctx.drawImage(
-                    img,
-                    bbox.x1, bbox.y1, width, height,
-                    0, 0, width, height
-                );
-                canvas.toBlob((blob) => {
-                    if (blob) resolve(blob);
-                    else reject(new Error('Canvas to Blob failed'));
-                }, imageFile.type);
-            };
-            img.onerror = reject;
-            img.src = URL.createObjectURL(imageFile);
-        });
-    };
-
     const runCnnAnalysis = async () => {
         if (!uploadedFile || cnnResult) return;
 
         setIsAnalyzingCnn(true);
         try {
             const formData = new FormData();
-
-            // Check if we have a bounding box from YOLO to crop
-            if (yoloResult?.best_detection?.bounding_box) {
-                try {
-                    const croppedBlob = await cropImage(uploadedFile, yoloResult.best_detection.bounding_box);
-
-                    // Create URL for display
-                    const croppedUrl = URL.createObjectURL(croppedBlob);
-                    setCroppedImageUrl(croppedUrl);
-
-                    formData.append('image', croppedBlob, 'cropped_image.png');
-                    console.log('Using cropped image for CNN analysis');
-                } catch (cropError) {
-                    console.error('Error cropping image, falling back to original:', cropError);
-                    formData.append('image', uploadedFile);
-                }
-            } else {
-                formData.append('image', uploadedFile);
-            }
+            formData.append('image', uploadedFile);
 
             const response = await fetch('http://localhost:8000/api/detect-tumor/neuronal-network/voting-label', {
                 method: 'POST',
@@ -350,7 +300,6 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                                         setUploadedFile(null);
                                         setYoloResult(null);
                                         setCnnResult(null);
-                                        setCroppedImageUrl(null);
                                     }}
                                     className="px-6 py-3 rounded-xl font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 transition-all flex items-center gap-2"
                                 >
@@ -513,11 +462,11 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                             <div className="space-y-6">
                                 <div className="bg-white/80 rounded-2xl p-8 border border-gray-300/50 backdrop-blur-sm shadow-xl text-center">
                                     <h3 className="text-lg font-semibold text-slate-900 mb-4 text-left">
-                                        {croppedImageUrl ? 'Imagine Decupată (Tumoare)' : (processedImageUrl ? 'Imagine Procesată (Yolo)' : 'Imagine Originală')}
+                                        {processedImageUrl ? 'Imagine Procesată (Yolo)' : 'Imagine Originală'}
                                     </h3>
                                     <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-300 inline-block max-h-96">
                                         <img
-                                            src={croppedImageUrl || processedImageUrl || uploadedImage || ''}
+                                            src={processedImageUrl || uploadedImage || ''}
                                             alt="MRI Scan"
                                             className="max-h-96 w-auto object-cover"
                                         />

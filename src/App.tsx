@@ -8,8 +8,9 @@ import { ClassifyCnnVit } from './pages/ClassifyCnnVit';
 import { ClassifyCnnVitVotingLikelyhood } from './pages/ClassifyCnnVitVotingLikelyhood';
 import { ClassifyCnnVitVotingLabel } from './pages/ClassifyCnnVitVotingLabel';
 import { DetectClassifyWizard } from './pages/DetectClassifyWizard';
+import { DetectClassifyBasic } from './pages/DetectClassifyBasic';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify';
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -46,6 +47,7 @@ function App() {
       {currentPage === 'classify-voting-prob' && <ClassifyCnnVitVotingLikelyhood onNavigate={handleNavigate} />}
       {currentPage === 'classify-voting-label' && <ClassifyCnnVitVotingLabel onNavigate={handleNavigate} />}
       {currentPage === 'detect-classify' && <DetectClassifyWizard onNavigate={handleNavigate} />}
+      {currentPage === 'detect-classify-basic' && <DetectClassifyBasic onNavigate={handleNavigate} />}
 
       {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">

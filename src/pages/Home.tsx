@@ -186,7 +186,24 @@ export function Home({ onNavigate }: HomeProps) {
                             </div>
                             {isSidebarOpen && (
                                 <div className="flex-1 flex items-center justify-between">
-                                    <span className="font-semibold text-slate-700">Detectie & Clasificare</span>
+                                    <span className="font-semibold text-slate-700">Detectie & Clasificare: Decupare</span>
+                                </div>
+                            )}
+                        </button>
+                    </div>
+
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => onNavigate('detect-classify-basic')}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
+                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                <Stethoscope className="w-6 h-6" />
+                            </div>
+                            {isSidebarOpen && (
+                                <div className="flex-1 flex items-center justify-between">
+                                    <span className="font-semibold text-slate-700">Detectie & Clasificare: Basic</span>
                                 </div>
                             )}
                         </button>
