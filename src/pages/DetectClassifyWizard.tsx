@@ -160,8 +160,23 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const width = bbox.x2 - bbox.x1;
-                const height = bbox.y2 - bbox.y1;
+
+                // Calculate dimensions of the original box
+                const boxWidth = bbox.x2 - bbox.x1;
+                const boxHeight = bbox.y2 - bbox.y1;
+
+                // Add 20% padding
+                const paddingX = boxWidth * 0.7;
+                const paddingY = boxHeight * 0.7;
+
+                const x1 = Math.max(0, bbox.x1 - paddingX);
+                const y1 = Math.max(0, bbox.y1 - paddingY);
+                const x2 = Math.min(img.width, bbox.x2 + paddingX);
+                const y2 = Math.min(img.height, bbox.y2 + paddingY);
+
+                const width = x2 - x1;
+                const height = y2 - y1;
+
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
@@ -171,7 +186,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                 }
                 ctx.drawImage(
                     img,
-                    bbox.x1, bbox.y1, width, height,
+                    x1, y1, width, height,
                     0, 0, width, height
                 );
                 canvas.toBlob((blob) => {
