@@ -83,19 +83,30 @@ const OriginalImageClassificationResults = () => {
                     <div className="p-6">
                         {/* Custom Tabs */}
                         <div className="flex space-x-1 rounded-xl bg-slate-100 p-1 mb-6">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`w-full rounded-lg py-2.5 text-sm font-medium leading-5 ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 transition-all duration-200
+                            {tabs.map((tab) => {
+                                const tabData = filterData(tab.id);
+                                const correctCount = tabData.filter(item => item.clasa_reala === item.clasa_detectata).length;
+                                const totalCount = tabData.length;
+
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`w-full rounded-lg py-2.5 text-sm font-medium leading-5 ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 transition-all duration-200
                     ${activeTab === tab.id
-                                            ? 'bg-white text-blue-700 shadow'
-                                            : 'text-slate-600 hover:bg-white/[0.12] hover:text-slate-800'
-                                        }`}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
+                                                ? 'bg-white text-blue-700 shadow'
+                                                : 'text-slate-600 hover:bg-white/[0.12] hover:text-slate-800'
+                                            }`}
+                                    >
+                                        <div className="flex flex-col items-center">
+                                            <span>{tab.label}</span>
+                                            <span className="text-xs opacity-80">
+                                                (Corecte: {correctCount}/{totalCount})
+                                            </span>
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
 
                         {/* Table */}
