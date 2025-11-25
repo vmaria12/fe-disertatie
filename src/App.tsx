@@ -9,8 +9,9 @@ import { ClassifyCnnVitVotingLikelyhood } from './pages/ClassifyCnnVitVotingLike
 import { ClassifyCnnVitVotingLabel } from './pages/ClassifyCnnVitVotingLabel';
 import { DetectClassifyWizard } from './pages/DetectClassifyWizard';
 import { DetectClassifyBasic } from './pages/DetectClassifyBasic';
+import OriginalImageClassificationResults from './pages/OriginalImageClassificationResults';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic';
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic' | 'original-image-classification-results';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -48,6 +49,7 @@ function App() {
       {currentPage === 'classify-voting-label' && <ClassifyCnnVitVotingLabel onNavigate={handleNavigate} />}
       {currentPage === 'detect-classify' && <DetectClassifyWizard onNavigate={handleNavigate} />}
       {currentPage === 'detect-classify-basic' && <DetectClassifyBasic onNavigate={handleNavigate} />}
+      {currentPage === 'original-image-classification-results' && <OriginalImageClassificationResults />}
 
       {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">

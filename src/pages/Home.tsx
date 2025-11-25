@@ -10,6 +10,7 @@ export function Home({ onNavigate }: HomeProps) {
     const [isYoloExpanded, setIsYoloExpanded] = useState(false);
     const [isClassificationExpanded, setIsClassificationExpanded] = useState(false);
     const [isDetectClassifyExpanded, setIsDetectClassifyExpanded] = useState(false);
+    const [isResultsExpanded, setIsResultsExpanded] = useState(false);
 
     return (
         <div className="flex min-h-screen bg-slate-50">
@@ -227,6 +228,52 @@ export function Home({ onNavigate }: HomeProps) {
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
                                         Basic
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Rezultate Section */}
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => {
+                                if (!isSidebarOpen) setIsSidebarOpen(true);
+                                setIsResultsExpanded(!isResultsExpanded);
+                            }}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
+                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <div className="p-1.5 bg-orange-50 text-orange-500 rounded-md group-hover:bg-orange-500 group-hover:text-white">
+                                <FileCheck className="w-6 h-6" />
+                            </div>
+                            {isSidebarOpen && (
+                                <div className="flex-1 flex items-center justify-between">
+                                    <span className="font-semibold text-slate-700">Rezultate</span>
+                                    {isResultsExpanded ? (
+                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                                    )}
+                                </div>
+                            )}
+                        </button>
+
+                        {/* Expandable Content Rezultate */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out
+                            ${isResultsExpanded && isSidebarOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                        >
+                            <div className="pl-4 space-y-2 mt-2">
+                                <button
+                                    onClick={() => onNavigate('original-image-classification-results')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-orange-50 text-orange-500 rounded-md group-hover:bg-orange-500 group-hover:text-white">
+                                        <Image className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-orange-700 text-left">
+                                        Clasificare-Imagine Originală
                                     </span>
                                 </button>
                             </div>
