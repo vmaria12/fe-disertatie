@@ -109,6 +109,34 @@ const OriginalImageClassificationResults = () => {
                             })}
                         </div>
 
+                        {/* Misclassification Summary */}
+                        {(() => {
+                            const misclassifications = filteredData.reduce((acc, item) => {
+                                if (item.clasa_detectata !== item.clasa_reala) {
+                                    acc[item.clasa_detectata] = (acc[item.clasa_detectata] || 0) + 1;
+                                }
+                                return acc;
+                            }, {} as Record<string, number>);
+
+                            if (Object.keys(misclassifications).length === 0) return null;
+
+                            return (
+                                <div className="mb-6">
+                                    <h3 className="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Confuzii (Predicții Incorecte)</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                        {Object.entries(misclassifications).map(([cls, count]) => (
+                                            <div key={cls} className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center justify-between">
+                                                <span className="text-red-700 font-medium capitalize">{cls}</span>
+                                                <span className="bg-white text-red-700 border border-red-200 py-1 px-3 rounded-lg text-sm font-bold shadow-sm">
+                                                    {count}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
                         {/* Table */}
                         <div className="overflow-x-auto rounded-lg border border-slate-200">
                             <table className="min-w-full divide-y divide-slate-200">
