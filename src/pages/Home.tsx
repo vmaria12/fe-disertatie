@@ -273,7 +273,19 @@ export function Home({ onNavigate }: HomeProps) {
                                         <Image className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-orange-700 text-left">
-                                        Clasificare-Imagine Originală
+                                        Imagine Decupată
+                                    </span>
+                                </button>
+
+                                <button
+                                    onClick={() => onNavigate('cropped-image-classification-results')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-orange-50 text-orange-500 rounded-md group-hover:bg-orange-500 group-hover:text-white">
+                                        <Image className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-orange-700 text-left">
+                                        Imaginie Originala
                                     </span>
                                 </button>
                             </div>
