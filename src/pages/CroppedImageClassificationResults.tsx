@@ -73,7 +73,7 @@ const CroppedImageClassificationResults = () => {
                             <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
                                 <FileText className="w-6 h-6" />
                             </div>
-                            <h1 className="text-2xl font-bold text-slate-900">Rezultate Clasificare - Imagine Originala</h1>
+                            <h1 className="text-2xl font-bold text-slate-900">Rezultate Detectie - Clasificare - Imagine Originala</h1>
                         </div>
                     </div>
 
