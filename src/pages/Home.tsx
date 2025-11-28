@@ -1,4 +1,4 @@
-import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight, Crop, Image } from 'lucide-react';
+import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight, Crop, Image, ScanLine } from 'lucide-react';
 import { useState } from 'react';
 
 interface HomeProps {
@@ -11,15 +11,16 @@ export function Home({ onNavigate }: HomeProps) {
     const [isClassificationExpanded, setIsClassificationExpanded] = useState(false);
     const [isDetectClassifyExpanded, setIsDetectClassifyExpanded] = useState(false);
     const [isResultsExpanded, setIsResultsExpanded] = useState(false);
+    const [isDetectSegmentExpanded, setIsDetectSegmentExpanded] = useState(false);
 
     return (
         <div className="flex min-h-screen bg-slate-50">
             {/* Sidebar */}
             <aside
                 className={`fixed top-0 left-0 h-full bg-white shadow-2xl transition-all duration-300 z-20 
-                ${isSidebarOpen ? 'w-72' : 'w-20'} overflow-hidden`}
+                ${isSidebarOpen ? 'w-72' : 'w-20'} overflow-hidden flex flex-col`}
             >
-                <div className="p-6 flex items-center justify-between">
+                <div className="p-6 flex items-center justify-between shrink-0">
                     <div className={`flex items-center gap-3 ${!isSidebarOpen && 'hidden'}`}>
                         <div className="p-2 bg-blue-600 rounded-lg">
                             <Brain className="w-6 h-6 text-white" />
@@ -34,7 +35,7 @@ export function Home({ onNavigate }: HomeProps) {
                     </button>
                 </div>
 
-                <nav className="mt-8 px-4 space-y-3">
+                <nav className="mt-8 px-4 space-y-3 flex-1 overflow-y-auto overflow-x-hidden">
                     {/* Detectie Yolo Section */}
                     <div className="space-y-1">
                         <button
@@ -230,15 +231,49 @@ export function Home({ onNavigate }: HomeProps) {
                                         Basic
                                     </span>
                                 </button>
+                            </div>
+                        </div>
+                    </div>
 
+                    {/* Detectie & Segmentare Section */}
+                    <div className="space-y-1">
+                        <button
+                            onClick={() => {
+                                if (!isSidebarOpen) setIsSidebarOpen(true);
+                                setIsDetectSegmentExpanded(!isDetectSegmentExpanded);
+                            }}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group hover:bg-slate-50
+                            ${!isSidebarOpen ? 'justify-center' : ''}`}
+                        >
+                            <div className="p-1.5 bg-pink-50 text-pink-500 rounded-md group-hover:bg-pink-500 group-hover:text-white">
+                                <ScanLine className="w-6 h-6" />
+                            </div>
+                            {isSidebarOpen && (
+                                <div className="flex-1 flex items-center justify-between">
+                                    <span className="font-semibold text-slate-700">Detectie & Segmentare</span>
+                                    {isDetectSegmentExpanded ? (
+                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                    ) : (
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                                    )}
+                                </div>
+                            )}
+                        </button>
+
+                        {/* Expandable Content Detectie & Segmentare */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out
+                            ${isDetectSegmentExpanded && isSidebarOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                        >
+                            <div className="pl-4 space-y-2 mt-2">
                                 <button
                                     onClick={() => onNavigate('auto-annotate')}
-                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-pink-50 transition-colors group"
                                 >
-                                    <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
+                                    <div className="p-1.5 bg-pink-50 text-pink-500 rounded-md group-hover:bg-pink-500 group-hover:text-white">
                                         <Crop className="w-4 h-4" />
                                     </div>
-                                    <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-pink-700 text-left">
                                         Auto Adnotare
                                     </span>
                                 </button>
@@ -261,7 +296,7 @@ export function Home({ onNavigate }: HomeProps) {
                             </div>
                             {isSidebarOpen && (
                                 <div className="flex-1 flex items-center justify-between">
-                                    <span className="font-semibold text-slate-700">Rezultate</span>
+                                    <span className="font-semibold text-slate-700">Rezultate detecție și clasificare</span>
                                     {isResultsExpanded ? (
                                         <ChevronDown className="w-4 h-4 text-slate-400" />
                                     ) : (
