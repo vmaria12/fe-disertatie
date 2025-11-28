@@ -251,7 +251,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 h-[400px] flex items-center justify-center">
+                                        <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-white h-[400px] flex items-center justify-center">
                                             <img
                                                 src={previewUrl!}
                                                 alt="Preview"
@@ -319,7 +319,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                             {/* Detection View */}
                                             {activeTab === 'detection' && detectionImage && (
                                                 <div className="flex flex-col h-full overflow-y-auto">
-                                                    <div className="bg-slate-900 flex items-center justify-center p-4 min-h-[300px]">
+                                                    <div className="bg-white flex items-center justify-center p-4 min-h-[300px]">
                                                         <img
                                                             src={detectionImage}
                                                             alt="Detection Result"
@@ -419,7 +419,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                             {activeTab === 'segmentation' && result ? (
                                                 <div className="flex-1 flex flex-col h-full">
                                                     {result.image_base64 ? (
-                                                        <div className="flex-1 bg-slate-900 flex items-center justify-center overflow-hidden border-b border-slate-200 relative">
+                                                        <div className="flex-1 bg-white flex items-center justify-center overflow-hidden border-b border-slate-200 relative">
                                                             <img
                                                                 src={`data:image/png;base64,${result.image_base64}`}
                                                                 alt="Annotated Result"
