@@ -178,7 +178,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                 <div>
                                     <h1 className="text-2xl font-bold text-slate-900">Auto Adnotare (YOLO + SAM)</h1>
                                     <p className="text-slate-500 text-sm mt-1">
-                                        Pipeline automat: Detecție Tumori - Votare Modele - Segmentare Precisă
+                                        Pipeline automat: Detecție Tumori - Votare Modele - Segmentare cu SAM
                                     </p>
                                 </div>
                             </div>
