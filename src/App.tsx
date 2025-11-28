@@ -12,7 +12,9 @@ import { DetectClassifyBasic } from './pages/DetectClassifyBasic';
 import OriginalImageClassificationResults from './pages/OriginalImageClassificationResults';
 import CroppedImageClassificationResults from './pages/CroppedImageClassificationResults';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic' | 'original-image-classification-results' | 'cropped-image-classification-results';
+import { AutoAnnotate } from './pages/AutoAnnotate';
+
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic' | 'original-image-classification-results' | 'cropped-image-classification-results' | 'auto-annotate';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -52,6 +54,7 @@ function App() {
       {currentPage === 'detect-classify-basic' && <DetectClassifyBasic onNavigate={handleNavigate} />}
       {currentPage === 'original-image-classification-results' && <OriginalImageClassificationResults />}
       {currentPage === 'cropped-image-classification-results' && <CroppedImageClassificationResults />}
+      {currentPage === 'auto-annotate' && <AutoAnnotate onNavigate={handleNavigate} />}
 
       {/* Footer-ul aplicației */}
       <footer className="bg-slate-900 text-slate-400 py-12">
