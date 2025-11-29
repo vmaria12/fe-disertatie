@@ -68,6 +68,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
     const [error, setError] = useState<string | null>(null);
     const [progressStep, setProgressStep] = useState(0); // 0: Idle, 1: Detection, 2: Segmentation, 3: Classification, 4: Done
     const [activeTab, setActiveTab] = useState<'detection' | 'segmentation' | 'classification'>('detection');
+    const [bgBrightness, setBgBrightness] = useState(255);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +83,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
             setError(null);
             setProgressStep(0);
             setActiveTab('detection');
+            setBgBrightness(255);
         }
     };
 
@@ -96,6 +98,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
         setYoloResult(null);
         setResult(null);
         setCnnResult(null);
+        setBgBrightness(255);
 
         try {
             // --- Step 1: Voting & Detection ---
@@ -205,6 +208,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
         setError(null);
         setProgressStep(0);
         setActiveTab('detection');
+        setBgBrightness(255);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -363,7 +367,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                     </h2>
                                 </div>
 
-                                <div className={`border border-slate-200 rounded-xl bg-slate-50 flex flex-col overflow-hidden relative ${activeTab === 'detection' ? 'min-h-[600px]' : 'h-[600px]'}`}>
+                                <div className={`border border-slate-200 rounded-xl bg-slate-50 flex flex-col overflow-hidden relative ${activeTab === 'segmentation' ? 'h-[600px]' : 'min-h-[600px]'}`}>
                                     {error ? (
                                         <div className="m-4 bg-red-50 text-red-700 p-4 rounded-lg flex items-start gap-3">
                                             <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -490,13 +494,28 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
 
                                             {/* Classification View */}
                                             {activeTab === 'classification' && cnnResult && result?.segmented_image_base64 && (
-                                                <div className="flex flex-col h-full overflow-y-auto">
-                                                    <div className="bg-black flex items-center justify-center p-4 min-h-[300px]">
+                                                <div className="flex flex-col">
+                                                    <div
+                                                        className="flex flex-col items-center justify-center p-4 min-h-[200px] transition-colors duration-200"
+                                                        style={{ backgroundColor: `rgb(${bgBrightness}, ${bgBrightness}, ${bgBrightness})` }}
+                                                    >
                                                         <img
                                                             src={`data:image/png;base64,${result.segmented_image_base64}`}
                                                             alt="Segmented Tumor"
-                                                            className="max-w-full max-h-[300px] object-contain"
+                                                            className="max-w-full max-h-[200px] object-contain"
                                                         />
+                                                        <div className="mt-4 w-full max-w-xs flex items-center gap-3 bg-white/80 p-2 rounded-lg backdrop-blur-sm">
+                                                            <div className="w-4 h-4 rounded-full border border-gray-300 bg-black"></div>
+                                                            <input
+                                                                type="range"
+                                                                min="0"
+                                                                max="255"
+                                                                value={bgBrightness}
+                                                                onChange={(e) => setBgBrightness(Number(e.target.value))}
+                                                                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                            />
+                                                            <div className="w-4 h-4 rounded-full border border-gray-300 bg-white"></div>
+                                                        </div>
                                                     </div>
 
                                                     <div className="p-6 space-y-6 bg-white">
