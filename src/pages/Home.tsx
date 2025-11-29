@@ -274,7 +274,7 @@ export function Home({ onNavigate }: HomeProps) {
                                         <Crop className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-pink-700 text-left">
-                                        Auto Adnotare
+                                        Auto Adnotare+
                                     </span>
                                 </button>
                             </div>
@@ -296,7 +296,7 @@ export function Home({ onNavigate }: HomeProps) {
                             </div>
                             {isSidebarOpen && (
                                 <div className="flex-1 flex items-center justify-between">
-                                    <span className="font-semibold text-slate-700">Rezultate detecție și clasificare</span>
+                                    <span className="font-semibold text-slate-700">Rezultate Yolo& CNN/ViT</span>
                                     {isResultsExpanded ? (
                                         <ChevronDown className="w-4 h-4 text-slate-400" />
                                     ) : (

@@ -9,6 +9,7 @@ interface AnnotationResponse {
     filename: string;
     annotation: string;
     image_base64?: string;
+    segmented_image_base64?: string;
     message?: string;
 }
 
@@ -40,6 +41,22 @@ interface VotingResponseYolo {
     };
 }
 
+interface VotingResponseCnn {
+    individual_results: {
+        [key: string]: {
+            predicted_class: string;
+            confidence: string;
+            all_probabilities: { [key: string]: string };
+        } | { error: string };
+    };
+    voting_result: {
+        winning_class: string;
+        vote_counts: { [key: string]: number };
+        prob_sums: { [key: string]: string };
+        tie_break_used: boolean;
+    };
+}
+
 export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -47,9 +64,10 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
     const [result, setResult] = useState<AnnotationResponse | null>(null);
     const [detectionImage, setDetectionImage] = useState<string | null>(null);
     const [yoloResult, setYoloResult] = useState<VotingResponseYolo | null>(null);
+    const [cnnResult, setCnnResult] = useState<VotingResponseCnn | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [progressStep, setProgressStep] = useState(0); // 0: Idle, 1: Detection, 2: Segmentation, 3: Done
-    const [activeTab, setActiveTab] = useState<'detection' | 'segmentation'>('detection');
+    const [progressStep, setProgressStep] = useState(0); // 0: Idle, 1: Detection, 2: Segmentation, 3: Classification, 4: Done
+    const [activeTab, setActiveTab] = useState<'detection' | 'segmentation' | 'classification'>('detection');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +78,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
             setResult(null);
             setDetectionImage(null);
             setYoloResult(null);
+            setCnnResult(null);
             setError(null);
             setProgressStep(0);
             setActiveTab('detection');
@@ -76,6 +95,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
         setDetectionImage(null);
         setYoloResult(null);
         setResult(null);
+        setCnnResult(null);
 
         try {
             // --- Step 1: Voting & Detection ---
@@ -130,10 +150,42 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                 throw new Error(errorData.error || 'Failed to generate segmentation.');
             }
 
-            const data = await annotationResponse.json();
+            const data: AnnotationResponse = await annotationResponse.json();
             setResult(data);
-            setProgressStep(3); // Done
-            setActiveTab('segmentation'); // Switch to final result
+
+            if (!data.segmented_image_base64) {
+                throw new Error('Segmentation succeeded but no segmented image was returned.');
+            }
+
+            // --- Step 3: Classification (CNN/ViT on Segmented Image) ---
+            setProgressStep(3);
+
+            // Convert base64 segmented image to Blob for upload
+            const byteCharacters = atob(data.segmented_image_base64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const segmentedBlob = new Blob([byteArray], { type: 'image/png' });
+
+            const classificationFormData = new FormData();
+            classificationFormData.append('image', segmentedBlob, 'segmented_tumor.png');
+
+            const classificationResponse = await fetch('http://localhost:8000/api/detect-tumor/neuronal-network/voting-label', {
+                method: 'POST',
+                body: classificationFormData,
+            });
+
+            if (!classificationResponse.ok) {
+                throw new Error('Failed to classify segmented tumor.');
+            }
+
+            const classificationData: VotingResponseCnn = await classificationResponse.json();
+            setCnnResult(classificationData);
+
+            setProgressStep(4); // Done
+            setActiveTab('classification'); // Switch to final result
 
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
@@ -149,6 +201,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
         setResult(null);
         setDetectionImage(null);
         setYoloResult(null);
+        setCnnResult(null);
         setError(null);
         setProgressStep(0);
         setActiveTab('detection');
@@ -158,8 +211,9 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
     };
 
     const steps = [
-        { id: 1, label: '1. Detecție & Votare (YOLO)', icon: Brain, tab: 'detection' },
-        { id: 2, label: '2. Segmentare & Rezultat', icon: ScanLine, tab: 'segmentation' },
+        { id: 1, label: '1. Detecție (YOLO)', icon: Brain, tab: 'detection' },
+        { id: 2, label: '2. Segmentare (SAM)', icon: ScanLine, tab: 'segmentation' },
+        { id: 3, label: '3. Clasificare (CNN)', icon: Activity, tab: 'classification' },
     ];
 
     return (
@@ -176,9 +230,9 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                     <ScanLine className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-bold text-slate-900">Auto Adnotare (YOLO + SAM)</h1>
+                                    <h1 className="text-2xl font-bold text-slate-900">Auto Adnotare & Diagnostic</h1>
                                     <p className="text-slate-500 text-sm mt-1">
-                                        Pipeline automat: Detecție Tumori - Votare Modele - Segmentare cu SAM
+                                        Pipeline automat: Detecție - Segmentare - Clasificare
                                     </p>
                                 </div>
                             </div>
@@ -193,7 +247,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                     </div>
 
                     <div className="p-6">
-                        {/* Progress Stepper (Tab-like style) */}
+                        {/* Progress Stepper */}
                         {(isLoading || progressStep > 0) && (
                             <div className="flex space-x-1 rounded-xl bg-slate-100 p-1 mb-8">
                                 {steps.map((step) => {
@@ -209,6 +263,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                             onClick={() => {
                                                 if (step.tab === 'detection') setActiveTab('detection');
                                                 if (step.tab === 'segmentation' && result) setActiveTab('segmentation');
+                                                if (step.tab === 'classification' && cnnResult) setActiveTab('classification');
                                             }}
                                             className={`w-full rounded-lg py-3 text-sm font-medium leading-5 transition-all duration-200 flex items-center justify-center gap-2
                                             ${isActive
@@ -258,6 +313,9 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                                 className="max-w-full max-h-full object-contain"
                                             />
                                         </div>
+                                        <div className="text-right text-sm text-slate-500 font-medium">
+                                            {selectedFile.name}
+                                        </div>
                                         <div className="flex gap-3">
                                             <button
                                                 onClick={handleUpload}
@@ -272,7 +330,7 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                                 ) : (
                                                     <>
                                                         <Activity className="w-5 h-5" />
-                                                        Generează Adnotări
+                                                        Start Analiză Completă
                                                     </>
                                                 )}
                                             </button>
@@ -301,11 +359,11 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
                                         <FileText className="w-5 h-5 text-green-500" />
-                                        Rezultat {activeTab === 'detection' ? 'Detecție (Pas 1)' : 'Segmentare (Pas 2)'}
+                                        Rezultat {activeTab === 'detection' ? 'Detecție (Pas 1)' : activeTab === 'segmentation' ? 'Segmentare (Pas 2)' : 'Clasificare (Pas 3)'}
                                     </h2>
                                 </div>
 
-                                <div className={`border border-slate-200 rounded-xl bg-slate-50 flex flex-col overflow-hidden relative ${activeTab === 'detection' ? 'min-h-[600px]' : 'h-[400px]'}`}>
+                                <div className={`border border-slate-200 rounded-xl bg-slate-50 flex flex-col overflow-hidden relative ${activeTab === 'detection' ? 'min-h-[600px]' : 'h-[600px]'}`}>
                                     {error ? (
                                         <div className="m-4 bg-red-50 text-red-700 p-4 rounded-lg flex items-start gap-3">
                                             <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -425,13 +483,91 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                                                 alt="Annotated Result"
                                                                 className="max-w-full max-h-full object-contain"
                                                             />
-
                                                         </div>
                                                     ) : null}
-
-
                                                 </div>
                                             ) : null}
+
+                                            {/* Classification View */}
+                                            {activeTab === 'classification' && cnnResult && result?.segmented_image_base64 && (
+                                                <div className="flex flex-col h-full overflow-y-auto">
+                                                    <div className="bg-black flex items-center justify-center p-4 min-h-[300px]">
+                                                        <img
+                                                            src={`data:image/png;base64,${result.segmented_image_base64}`}
+                                                            alt="Segmented Tumor"
+                                                            className="max-w-full max-h-[300px] object-contain"
+                                                        />
+                                                    </div>
+
+                                                    <div className="p-6 space-y-6 bg-white">
+                                                        <div className={`p-6 rounded-2xl border backdrop-blur-sm shadow-sm ${cnnResult.voting_result.winning_class === 'notumor' ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'
+                                                            }`}>
+                                                            <div className="flex items-start justify-between">
+                                                                <div>
+                                                                    <h2 className="text-gray-600 text-xs font-bold uppercase tracking-wider mb-1">
+                                                                        Diagnostic Final (CNN/ViT)
+                                                                    </h2>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className={`text-2xl font-bold ${cnnResult.voting_result.winning_class === 'notumor' ? 'text-emerald-600' : 'text-red-600'
+                                                                            }`}>
+                                                                            {cnnResult.voting_result.winning_class}
+                                                                        </span>
+                                                                    </div>
+                                                                    {cnnResult.voting_result.tie_break_used && (
+                                                                        <span className="text-[10px] text-amber-600 font-medium mt-1 block">
+                                                                            *Departajare prin suma probabilităților
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <div className="text-xs text-gray-600 mb-1">Voturi</div>
+                                                                    <div className="text-xl font-mono font-bold text-gray-900">
+                                                                        {cnnResult.voting_result.vote_counts[cnnResult.voting_result.winning_class]} / 3
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Individual Model Results */}
+                                                        <div>
+                                                            <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                                                <Activity className="w-4 h-4 text-blue-500" />
+                                                                Rezultate Modele Individuale
+                                                            </h3>
+                                                            <div className="space-y-3">
+                                                                {Object.entries(cnnResult.individual_results).map(([model, res]) => (
+                                                                    <div key={model} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                                                        <div className="flex items-center justify-between mb-2">
+                                                                            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                                                                                {model}
+                                                                            </span>
+                                                                            {'predicted_class' in res ? (
+                                                                                <span className="text-[10px] text-gray-500">
+                                                                                    Confidență: <span className="font-mono font-bold text-gray-900">{res.confidence}</span>
+                                                                                </span>
+                                                                            ) : (
+                                                                                <span className="text-[10px] text-red-500">Eroare</span>
+                                                                            )}
+                                                                        </div>
+                                                                        {'predicted_class' in res && (
+                                                                            <div className="flex justify-between text-xs p-1.5 bg-white rounded border border-slate-100">
+                                                                                <span className="text-gray-700 font-medium">{res.predicted_class}</span>
+                                                                                <div className="flex gap-2">
+                                                                                    {Object.entries(res.all_probabilities).map(([cls, prob]) => (
+                                                                                        <span key={cls} className="text-[10px] text-gray-400">
+                                                                                            {cls}: {prob}
+                                                                                        </span>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             {/* Empty State */}
                                             {!detectionImage && !result && !isLoading && (
