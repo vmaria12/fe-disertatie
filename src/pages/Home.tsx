@@ -274,7 +274,7 @@ export function Home({ onNavigate }: HomeProps) {
                                         <Crop className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-pink-700 text-left">
-                                        Auto Adnotare+
+                                        Yolo & SAM & CNN/ViT
                                     </span>
                                 </button>
                             </div>

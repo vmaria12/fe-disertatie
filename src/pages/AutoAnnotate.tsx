@@ -234,9 +234,9 @@ export function AutoAnnotate({ onNavigate }: AutoAnnotateProps) {
                                     <ScanLine className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-bold text-slate-900">Auto Adnotare & Diagnostic</h1>
+                                    <h1 className="text-2xl font-bold text-slate-900">Segmentare & Diagnostic</h1>
                                     <p className="text-slate-500 text-sm mt-1">
-                                        Pipeline automat: Detecție - Segmentare - Clasificare
+                                        Detecție - Segmentare - Clasificare
                                     </p>
                                 </div>
                             </div>
