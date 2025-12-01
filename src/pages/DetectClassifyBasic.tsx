@@ -78,6 +78,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
     const [yoloResult, setYoloResult] = useState<VotingResponseYolo | null>(null);
     const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
     const [jsonYoloResult, setJsonYoloResult] = useState<any | null>(null);
+    const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null);
 
     // Step 3 State (CNN/ViT)
     const [isAnalyzingCnn, setIsAnalyzingCnn] = useState(false);
@@ -96,6 +97,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                 setProcessedImageUrl(null);
                 setJsonYoloResult(null);
                 setCnnResult(null);
+                setCroppedImageUrl(null);
                 setExecutionTime(null);
                 setStep(1);
             };
@@ -103,8 +105,8 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
         }
     };
 
-    const runYoloAnalysis = async () => {
-        if (!uploadedFile || yoloResult) return;
+    const runYoloAnalysis = async (): Promise<VotingResponseYolo | null> => {
+        if (!uploadedFile || yoloResult) return null;
 
         setIsAnalyzingYolo(true);
         try {
@@ -128,6 +130,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                 const jsonStr = atob(headerData);
                 const data: VotingResponseYolo = JSON.parse(jsonStr);
                 setYoloResult(data);
+                return data;
             }
 
             // 2. Call Label Endpoint (JSON) - Auto fetch for JSON view
@@ -144,18 +147,79 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
         } catch (error) {
             console.error('Error analyzing image (Yolo):', error);
             alert('A apărut o eroare la analiza Yolo.');
+            return null;
         } finally {
             setIsAnalyzingYolo(false);
         }
+        return null;
     };
 
-    const runCnnAnalysis = async () => {
+    const cropImage = (imageFile: File, bbox: { x1: number; y1: number; x2: number; y2: number }): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+
+                // Calculate dimensions of the original box
+                const boxWidth = bbox.x2 - bbox.x1;
+                const boxHeight = bbox.y2 - bbox.y1;
+
+                // Use exact coordinates from YOLO
+                const x1 = bbox.x1;
+                const y1 = bbox.y1;
+                const x2 = bbox.x2;
+                const y2 = bbox.y2;
+
+                const width = x2 - x1;
+                const height = y2 - y1;
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    reject(new Error('Could not get canvas context'));
+                    return;
+                }
+                ctx.drawImage(
+                    img,
+                    x1, y1, width, height,
+                    0, 0, width, height
+                );
+                canvas.toBlob((blob) => {
+                    if (blob) resolve(blob);
+                    else reject(new Error('Canvas to Blob failed'));
+                }, imageFile.type);
+            };
+            img.onerror = reject;
+            img.src = URL.createObjectURL(imageFile);
+        });
+    };
+
+    const runCnnAnalysis = async (yoloData?: VotingResponseYolo | null) => {
         if (!uploadedFile) return;
 
         setIsAnalyzingCnn(true);
         try {
             const formData = new FormData();
+            // Always use the original image for analysis, as requested
             formData.append('image', uploadedFile);
+
+            const sourceYoloResult = yoloData || yoloResult;
+
+            // Check if we have a bounding box from YOLO to crop (FOR DISPLAY ONLY)
+            if (sourceYoloResult?.best_detection?.bounding_box) {
+                try {
+                    const croppedBlob = await cropImage(uploadedFile, sourceYoloResult.best_detection.bounding_box);
+
+                    // Create URL for display
+                    const croppedUrl = URL.createObjectURL(croppedBlob);
+                    setCroppedImageUrl(croppedUrl);
+
+                    console.log('Generated cropped image for display only');
+                } catch (cropError) {
+                    console.error('Error cropping image for display:', cropError);
+                }
+            }
 
             const response = await fetch('http://localhost:8000/api/detect-tumor/neuronal-network/voting-label', {
                 method: 'POST',
@@ -184,10 +248,10 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                 const startTime = performance.now();
 
                 setStep(2);
-                await runYoloAnalysis();
+                const yoloData = await runYoloAnalysis();
 
                 setStep(3);
-                await runCnnAnalysis();
+                await runCnnAnalysis(yoloData);
 
                 const endTime = performance.now();
                 setExecutionTime(endTime - startTime);
@@ -230,7 +294,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                                Detecție & Clasificare Completă - imagine originală
+                                Detecție & Clasificare Completă - imagine decupată
                             </h1>
 
                         </div>
@@ -324,6 +388,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                                         setYoloResult(null);
                                         setCnnResult(null);
                                         setProcessedImageUrl(null);
+                                        setCroppedImageUrl(null);
                                     }}
                                     className="px-6 py-3 rounded-xl font-semibold bg-gray-200 hover:bg-gray-300 text-gray-700 transition-all flex items-center gap-2"
                                 >
@@ -474,6 +539,7 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                                         setYoloResult(null);
                                         setCnnResult(null);
                                         setExecutionTime(null);
+                                        setCroppedImageUrl(null);
                                     }}
                                     className="px-6 py-3 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-2 shadow-lg"
                                 >
@@ -483,21 +549,22 @@ export function DetectClassifyBasic({ onNavigate }: DetectClassifyWizardProps) {
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Left: Image (Original) */}
+                            {/* Left: Image (Original + Cropped) */}
                             <div className="space-y-6">
-                                <div className="bg-white/80 rounded-2xl p-8 border border-gray-300/50 backdrop-blur-sm shadow-xl text-center">
-                                    <h3 className="text-lg font-semibold text-slate-900 mb-4 text-left">
-                                        {processedImageUrl ? 'Imagine Procesată (Yolo)' : 'Imagine Originală'}
-                                    </h3>
-                                    <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-300 inline-block max-h-96">
-                                        <img
-                                            src={processedImageUrl || uploadedImage || ''}
-                                            alt="MRI Scan"
-                                            className="max-h-96 w-auto object-cover"
-                                        />
+
+
+                                {croppedImageUrl && (
+                                    <div className="bg-white/80 rounded-2xl p-8 border border-gray-300/50 backdrop-blur-sm shadow-xl text-center">
+
+                                        <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-300 inline-block max-h-96">
+                                            <img
+                                                src={croppedImageUrl}
+                                                alt="Cropped Tumor"
+                                                className="max-h-96 w-auto object-cover"
+                                            />
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-slate-600 font-medium mt-2">{fileName}</p>
-                                </div>
+                                )}
                             </div>
 
                             {/* Right: Results */}

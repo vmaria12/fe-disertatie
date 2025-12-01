@@ -297,7 +297,7 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                                Detecție & Clasificare Completă - Decupare
+                                Detecție & Clasificare Completă - imagine originală
                             </h1>
 
                         </div>
@@ -547,21 +547,23 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Left: Image (Original) */}
+                            {/* Left: Image (Original + Cropped) */}
                             <div className="space-y-6">
                                 <div className="bg-white/80 rounded-2xl p-8 border border-gray-300/50 backdrop-blur-sm shadow-xl text-center">
                                     <h3 className="text-lg font-semibold text-slate-900 mb-4 text-left">
-                                        {croppedImageUrl ? 'Imagine Decupată (Tumoare)' : (processedImageUrl ? 'Imagine Procesată (Yolo)' : 'Imagine Originală')}
+                                        {processedImageUrl ? 'Imagine Procesată (Yolo)' : 'Imagine Originală'}
                                     </h3>
                                     <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-300 inline-block max-h-96">
                                         <img
-                                            src={croppedImageUrl || processedImageUrl || uploadedImage || ''}
+                                            src={processedImageUrl || uploadedImage || ''}
                                             alt="MRI Scan"
                                             className="max-h-96 w-auto object-cover"
                                         />
                                     </div>
                                     <p className="text-sm text-slate-600 font-medium mt-2">{fileName}</p>
                                 </div>
+
+
                             </div>
 
                             {/* Right: Results */}

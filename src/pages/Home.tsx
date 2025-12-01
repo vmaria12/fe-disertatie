@@ -213,10 +213,10 @@ export function Home({ onNavigate }: HomeProps) {
                                     className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
                                 >
                                     <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
-                                        <Crop className="w-4 h-4" />
+                                        <Image className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
-                                        Decupare
+                                        Basic
                                     </span>
                                 </button>
 
@@ -225,10 +225,10 @@ export function Home({ onNavigate }: HomeProps) {
                                     className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-50 transition-colors group"
                                 >
                                     <div className="p-1.5 bg-purple-50 text-purple-500 rounded-md group-hover:bg-purple-500 group-hover:text-white">
-                                        <Image className="w-4 h-4" />
+                                        <Crop className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-purple-700 text-left">
-                                        Basic
+                                        Decupare
                                     </span>
                                 </button>
                             </div>
