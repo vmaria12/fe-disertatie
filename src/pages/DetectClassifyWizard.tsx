@@ -165,14 +165,11 @@ export function DetectClassifyWizard({ onNavigate }: DetectClassifyWizardProps) 
                 const boxWidth = bbox.x2 - bbox.x1;
                 const boxHeight = bbox.y2 - bbox.y1;
 
-                // Add 20% padding
-                const paddingX = boxWidth * 0.7;
-                const paddingY = boxHeight * 0.7;
-
-                const x1 = Math.max(0, bbox.x1 - paddingX);
-                const y1 = Math.max(0, bbox.y1 - paddingY);
-                const x2 = Math.min(img.width, bbox.x2 + paddingX);
-                const y2 = Math.min(img.height, bbox.y2 + paddingY);
+                // Use exact coordinates from YOLO
+                const x1 = bbox.x1;
+                const y1 = bbox.y1;
+                const x2 = bbox.x2;
+                const y2 = bbox.y2;
 
                 const width = x2 - x1;
                 const height = y2 - y1;
