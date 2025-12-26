@@ -12,10 +12,11 @@ import { DetectClassifyBasic } from './pages/DetectClassifyBasic';
 import OriginalImageClassificationResults from './pages/OriginalImageClassificationResults';
 import CroppedImageClassificationResults from './pages/CroppedImageClassificationResults';
 import SamImageClassificationResults from './pages/SamImageClassificationResults';
+import ClassificationComparison from './pages/ClassificationComparison';
 
 import { AutoAnnotate } from './pages/AutoAnnotate';
 
-type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic' | 'original-image-classification-results' | 'cropped-image-classification-results' | 'sam-image-classification-results' | 'auto-annotate';
+type Page = 'home' | 'diagnose' | 'automated-diagnose' | 'voting-label' | 'classify-cnn-vit' | 'classify-voting-prob' | 'classify-voting-label' | 'detect-classify' | 'detect-classify-basic' | 'original-image-classification-results' | 'cropped-image-classification-results' | 'sam-image-classification-results' | 'classification-comparison' | 'auto-annotate';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -56,6 +57,7 @@ function App() {
       {currentPage === 'original-image-classification-results' && <OriginalImageClassificationResults />}
       {currentPage === 'cropped-image-classification-results' && <CroppedImageClassificationResults />}
       {currentPage === 'sam-image-classification-results' && <SamImageClassificationResults />}
+      {currentPage === 'classification-comparison' && <ClassificationComparison />}
       {currentPage === 'auto-annotate' && <AutoAnnotate onNavigate={handleNavigate} />}
 
       {/* Footer-ul aplicației */}

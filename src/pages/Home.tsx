@@ -1,4 +1,4 @@
-import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight, Crop, Image, ScanLine } from 'lucide-react';
+import { Brain, Activity, FileCheck, Menu, Stethoscope, Vote, ChevronDown, ChevronRight, Crop, Image, ScanLine, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 
 interface HomeProps {
@@ -347,6 +347,18 @@ export function Home({ onNavigate }: HomeProps) {
                                         Imaginie Originala
                                     </span>
                                 </button>
+
+                                <button
+                                    onClick={() => onNavigate('classification-comparison')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-indigo-50 text-indigo-500 rounded-md group-hover:bg-indigo-500 group-hover:text-white">
+                                        <BarChart3 className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-indigo-700 text-left">
+                                        Comparare Rezultate
+                                    </span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -439,9 +451,7 @@ export function Home({ onNavigate }: HomeProps) {
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3">
                                         <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                        <p className="text-slate-700 font-medium">ViT-B/16</p>
-                                    </div>
-
+                                        <p className="text-slate-700 font-medium">ViT-B/16</p>                   </div>
                                 </div>
                             </div>
                         </div>
