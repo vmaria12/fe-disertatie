@@ -119,7 +119,7 @@ const OriginalImageClassificationResults = () => {
 
                             return (
                                 <div className="mb-6">
-                                    <h3 className="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Confuzii (Predicții Incorecte)</h3>
+
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                                         {Object.entries(misclassifications).map(([cls, count]) => (
                                             <div key={cls} className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center justify-between">

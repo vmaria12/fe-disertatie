@@ -7,7 +7,7 @@ interface ClassificationResult {
     clasa_detectata: string;
 }
 
-const CroppedImageClassificationResults = () => {
+const SamImageClassificationResults = () => {
     const [data, setData] = useState<ClassificationResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,7 @@ const CroppedImageClassificationResults = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/reports/classification-report-cropped');
+                const response = await fetch('http://127.0.0.1:8000/api/reports/classification-report-sam');
                 if (!response.ok) {
                     throw new Error('Failed to fetch data');
                 }
@@ -73,7 +73,7 @@ const CroppedImageClassificationResults = () => {
                             <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
                                 <FileText className="w-6 h-6" />
                             </div>
-                            <h1 className="text-2xl font-bold text-slate-900">Rezultate Detectie - Clasificare - Imagine Originala</h1>
+                            <h1 className="text-2xl font-bold text-slate-900">Rezultate Detectie, Segmentare & Clasificare</h1>
                         </div>
                     </div>
 
@@ -194,4 +194,4 @@ const CroppedImageClassificationResults = () => {
     );
 };
 
-export default CroppedImageClassificationResults;
+export default SamImageClassificationResults;

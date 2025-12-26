@@ -296,7 +296,7 @@ export function Home({ onNavigate }: HomeProps) {
                             </div>
                             {isSidebarOpen && (
                                 <div className="flex-1 flex items-center justify-between">
-                                    <span className="font-semibold text-slate-700">Rezultate Yolo& CNN/ViT</span>
+                                    <span className="font-semibold text-slate-700">Rezultate</span>
                                     {isResultsExpanded ? (
                                         <ChevronDown className="w-4 h-4 text-slate-400" />
                                     ) : (
@@ -320,7 +320,19 @@ export function Home({ onNavigate }: HomeProps) {
                                         <Image className="w-4 h-4" />
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 group-hover:text-orange-700 text-left">
-                                        Imagine Decupată
+                                        Detecție & Clasificare
+                                    </span>
+                                </button>
+
+                                <button
+                                    onClick={() => onNavigate('sam-image-classification-results')}
+                                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors group"
+                                >
+                                    <div className="p-1.5 bg-orange-50 text-orange-500 rounded-md group-hover:bg-orange-500 group-hover:text-white">
+                                        <Image className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-orange-700 text-left">
+                                        Detecție, Segmentare & Clasificare
                                     </span>
                                 </button>
 
