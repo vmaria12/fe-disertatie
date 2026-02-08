@@ -1,0 +1,38 @@
+mutation AddNewSymptomLog($patientId: UUID!, $dateLogged: Timestamp!, $description: String, $duration: String, $severity: Int!, $symptomName: String!) @auth(level: USER) {
+  symptomLog_insert(data: {
+    patientId: $patientId,
+    dateLogged: $dateLogged,
+    description: $description,
+    duration: $duration,
+    severity: $severity,
+    symptomName: $symptomName
+  })
+}
+
+query GetPatientTumors($patientId: UUID!) @auth(level: USER) {
+  tumors(where: {patientId: {eq: $patientId}}) {
+    id
+    name
+    location
+    initialSize
+    createdAt
+  }
+}
+
+mutation UpdateMeasurementNotes($id: UUID!, $notes: String) @auth(level: USER) {
+  measurement_update(id: $id, data: {notes: $notes}) {
+    id
+  }
+}
+
+query ListTreatments @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  treatments {
+    id
+    treatmentType
+    startDate
+    endDate
+    dosage
+    frequency
+    notes
+  }
+}

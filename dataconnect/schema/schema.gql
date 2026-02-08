@@ -1,0 +1,52 @@
+type User @table {
+  displayName: String!
+  userType: String!
+  createdAt: Timestamp!
+  email: String
+  photoUrl: String
+  contactNumber: String
+}
+
+type Patient @table {
+  user: User!
+  dateOfBirth: Date!
+  diagnosisDate: Date!
+  medicalRecordNumber: String
+  primaryOncologist: User
+}
+
+type Tumor @table {
+  patient: Patient!
+  name: String!
+  location: String!
+  createdAt: Timestamp!
+  initialSize: Float
+  notes: String
+}
+
+type Measurement @table {
+  tumor: Tumor!
+  dateMeasured: Timestamp!
+  size: Float!
+  measurementMethod: String
+  notes: String
+}
+
+type Treatment @table {
+  patient: Patient!
+  treatmentType: String!
+  startDate: Date!
+  endDate: Date
+  dosage: String
+  frequency: String
+  notes: String
+}
+
+type SymptomLog @table {
+  patient: Patient!
+  symptomName: String!
+  dateLogged: Timestamp!
+  severity: Int!
+  description: String
+  duration: String
+}

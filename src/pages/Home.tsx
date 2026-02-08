@@ -386,8 +386,8 @@ export function Home({ onNavigate }: HomeProps) {
                             <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 text-white relative z-10 border border-white/20">
                                 <Brain className="w-24 h-24 mx-auto mb-6 opacity-90" />
                                 <div className="text-center">
-                                    <p className="text-2xl font-bold mb-2">Analiză Avansată</p>
-                                    <p className="opacity-80">Detectare precisă cu AI</p>
+                                    <p className="text-2xl font-bold mb-2">Tumori cerebrale</p>
+                                    <p className="opacity-80">Detectare precisă</p>
                                 </div>
                             </div>
                         </div>

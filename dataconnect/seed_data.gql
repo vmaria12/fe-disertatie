@@ -1,0 +1,56 @@
+mutation SeedDatabase @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only seeds the database with initial data.") {
+  user_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      displayName: "Demo User 1",
+      userType: "patient",
+      createdAt: "2024-01-01T00:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      displayName: "Demo User 2",
+      userType: "oncologist",
+      createdAt: "2024-01-01T00:00:00Z"
+    }
+  ])
+  patient_insertMany(data: [
+    {
+      id: "650e8400-e29b-41d4-a716-446655440002",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      diagnosisDate: "2024-01-15",
+      dateOfBirth: "1990-05-20"
+    }
+  ])
+  tumor_insertMany(data: [
+    {
+      id: "750e8400-e29b-41d4-a716-446655440003",
+      patientId: "650e8400-e29b-41d4-a716-446655440002",
+      name: "Tumor 1",
+      location: "Lung",
+      createdAt: "2024-02-01T00:00:00Z"
+    }
+  ])
+  measurement_insertMany(data: [
+    {
+      tumorId: "750e8400-e29b-41d4-a716-446655440003",
+      dateMeasured: "2024-02-15T00:00:00Z",
+      size: 2.5
+    }
+  ])
+  treatment_insertMany(data: [
+    {
+      patientId: "650e8400-e29b-41d4-a716-446655440002",
+      treatmentType: "Chemotherapy",
+      startDate: "2024-03-01",
+      frequency: "Weekly"
+    }
+  ])
+  symptomLog_insertMany(data: [
+    {
+      patientId: "650e8400-e29b-41d4-a716-446655440002",
+      dateLogged: "2024-03-08T00:00:00Z",
+      symptomName: "Fatigue",
+      severity: 3
+    }
+  ])
+}
